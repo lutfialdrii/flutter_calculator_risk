@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 String formattingValueProbability(dynamic actualValue) {
   double max, min, realValue;
 
@@ -200,4 +202,91 @@ double reverseValueConsequence(double realValue) {
     sliderValue = 5;
   }
   return sliderValue;
+}
+
+int determineTieLine(double probability, double exposure) {
+  if (probability >= 10) {
+    if (exposure <= 0.5) {
+      return 1;
+    } else {
+      return 0;
+    }
+  } else if (probability >= 6) {
+    if (exposure <= 0.5) {
+      return 1;
+    } else {
+      return 0;
+    }
+  } else if (probability >= 2) {
+    if (exposure <= 0.1) {
+      return 4;
+    } else if (exposure <= 0.5) {
+      return 3;
+    } else {
+      return 0;
+    }
+  } else if (probability >= 1) {
+    if (exposure <= 0.5) {
+      return 3;
+    } else {
+      return 0;
+    }
+  } else if (probability >= 0.5) {
+    if (exposure <= 0.5) {
+      return 4;
+    } else if (exposure <= 2) {
+      return 2;
+    } else {
+      return 1;
+    }
+  } else if (probability >= 0.1) {
+    if (exposure <= 2) {
+      return 4;
+    } else {
+      return 3;
+    }
+  }
+
+  return 0;
+}
+
+String calculateRiskLevel(
+    double probability, double exposure, double consequence) {
+  double riskScore = probability * exposure * consequence;
+
+  if (riskScore > 400) {
+    return 'Very High Risk - Sangat berbahaya, tindakan harus segera diambil';
+  } else if (riskScore >= 200 && riskScore <= 400) {
+    return 'High Risk - Risiko tinggi, perlu perhatian serius';
+  } else if (riskScore >= 70 && riskScore < 200) {
+    return 'Substantial Risk - Risiko signifikan, perlu pengendalian';
+  } else if (riskScore >= 20 && riskScore < 70) {
+    return 'Moderate Risk - Risiko sedang, pemantauan diperlukan';
+  } else {
+    return 'Risk - Risiko dapat diterima';
+  }
+}
+
+int calculateRiskSliderValue(
+    double probability, double exposure, double consequence) {
+  double riskScore = probability * exposure * consequence;
+  log('Risk Score : $riskScore');
+
+  if (riskScore > 400) {
+    return 4;
+  } else if (riskScore >= 200 && riskScore <= 400) {
+    return 3;
+  } else if (riskScore >= 70 && riskScore < 200) {
+    return 2;
+  } else if (riskScore >= 20 && riskScore < 70) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+double calculateRiskScore(
+    double probability, double exposure, double consequence) {
+  double riskScore = probability * exposure * consequence;
+  return riskScore;
 }
