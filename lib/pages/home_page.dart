@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:calculator_risk/pages/info_page.dart';
 import 'package:calculator_risk/utils/utility.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -45,8 +46,26 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    double _riskScore = riskScoreValue;
+    // log('build RiskScore : $_riskScore');
     return Scaffold(
-      appBar: AppBar(title: const Text("Risk Score Calculator")),
+      appBar: AppBar(
+        title: const Text("Risk Score Calculator"),
+        elevation: 1,
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => InfoPage(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.info_outline_rounded),
+          )
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -54,7 +73,7 @@ class _HomePageState extends State<HomePage> {
             // Probability Card
             Card(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0).copyWith(left: 24),
                 child: Column(
                   children: [
                     const Text(
@@ -121,20 +140,30 @@ class _HomePageState extends State<HomePage> {
                                     double.parse(exposureController!.text),
                                     double.parse(consequenceController!.text),
                                   );
-                                  log('value : $_sliderValueProbability');
-                                  log('value TL : $_valueTieLine');
-                                  log('value RS : $_valueRiskSlider');
+                                  // log('value : $_sliderValueProbability');
+                                  // log('value TL : $_valueTieLine');
+                                  // log('value RS : $_valueRiskSlider');
                                 });
                               },
                             ),
                           ),
                         ),
-                        const SizedBox(width: 20),
+                        // const SizedBox(width: 80),
+                        const Spacer(),
                         Expanded(
                           child: TextFormField(
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
+                            decoration: const InputDecoration(
+                              labelText: 'Probability',
+                              labelStyle: TextStyle(fontSize: 11),
+                              border: OutlineInputBorder(),
+                              errorStyle: TextStyle(fontSize: 7),
+                            ),
                             controller: probabilityController,
+                            onTapOutside: (event) {
+                              FocusManager.instance.primaryFocus?.unfocus();
+                            },
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
                                   RegExp(r"[0-9.]")),
@@ -224,7 +253,7 @@ class _HomePageState extends State<HomePage> {
                                   (dynamic actualValue, String formattedText) {
                                 switch (actualValue) {
                                   case 0:
-                                    return 'Very Rare ';
+                                    return 'Very Rare';
                                   case 1:
                                     return 'Rare';
                                   case 2:
@@ -255,17 +284,27 @@ class _HomePageState extends State<HomePage> {
                                     double.parse(exposureController!.text),
                                     double.parse(consequenceController!.text),
                                   );
-                                  log('value E: $_sliderValueExposure');
+                                  // log('value E: $_sliderValueExposure');
                                 });
                               },
                             ),
                           ),
                         ),
-                        const SizedBox(width: 20),
+                        // const SizedBox(width: 80),
+                        const Spacer(
+                          flex: 2,
+                        ),
+
                         Expanded(
                           child: TextFormField(
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
+                            decoration: const InputDecoration(
+                              labelText: 'Exposure',
+                              labelStyle: TextStyle(fontSize: 11),
+                              border: OutlineInputBorder(),
+                              errorStyle: TextStyle(fontSize: 7),
+                            ),
                             controller: exposureController,
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
@@ -385,17 +424,25 @@ class _HomePageState extends State<HomePage> {
                                     double.parse(exposureController!.text),
                                     double.parse(consequenceController!.text),
                                   );
-                                  log('value C: $_sliderValueConsequence');
+                                  // log('value C: $_sliderValueConsequence');
                                 });
                               },
                             ),
                           ),
                         ),
-                        const SizedBox(width: 20),
+                        const Spacer(
+                          flex: 2,
+                        ),
                         Expanded(
                           child: TextFormField(
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
+                            decoration: const InputDecoration(
+                              labelText: 'Consequence',
+                              labelStyle: TextStyle(fontSize: 10),
+                              border: OutlineInputBorder(),
+                              errorStyle: TextStyle(fontSize: 7),
+                            ),
                             controller: consequenceController,
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
@@ -448,6 +495,9 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 16),
+            const Divider(),
+            const SizedBox(height: 16),
+
             // Result Card
             Card(
               child: Padding(
@@ -455,13 +505,13 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   children: [
                     const Text(
-                      "Hasil",
+                      "Result",
                       style: TextStyle(fontSize: 16),
                     ),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        // Probability
+                        // Result Probability
                         Expanded(
                           flex: 1,
                           child: Column(
@@ -493,7 +543,26 @@ class _HomePageState extends State<HomePage> {
                                   }
                                   return actualValue.toString();
                                 },
-                                onChanged: (dynamic value) {},
+                                onChanged: (dynamic value) {
+                                  setState(() {
+                                    _sliderValueProbability = value;
+                                    probabilityController!.text =
+                                        formattingValueProbability(value)
+                                            .toString();
+                                    _valueTieLine = determineTieLine(
+                                        double.parse(
+                                            probabilityController!.text),
+                                        double.parse(exposureController!.text));
+                                    _valueRiskSlider = calculateRiskSliderValue(
+                                      double.parse(probabilityController!.text),
+                                      double.parse(exposureController!.text),
+                                      double.parse(consequenceController!.text),
+                                    );
+                                    // log('value : $_sliderValueProbability');
+                                    // log('value TL : $_valueTieLine');
+                                    // log('value RS : $_valueRiskSlider');
+                                  });
+                                },
                               ),
                               const Text(
                                 "Probability",
@@ -502,7 +571,7 @@ class _HomePageState extends State<HomePage> {
                             ],
                           ),
                         ),
-                        // Exposure
+                        // Result Exposure
                         Expanded(
                           flex: 1,
                           child: Column(
@@ -511,6 +580,7 @@ class _HomePageState extends State<HomePage> {
                                 min: 0.0,
                                 max: 5.0,
                                 interval: 1.0,
+                                isInversed: true,
                                 value: _sliderValueExposure,
                                 tooltipPosition: SliderTooltipPosition.right,
                                 showDividers: true,
@@ -534,7 +604,23 @@ class _HomePageState extends State<HomePage> {
                                   }
                                   return actualValue.toString();
                                 },
-                                onChanged: (dynamic value) {},
+                                onChanged: (dynamic value) {
+                                  setState(() {
+                                    _sliderValueExposure = value;
+                                    exposureController!.text =
+                                        formattingValueExposure(value)
+                                            .toString();
+                                    _valueTieLine = determineTieLine(
+                                        double.parse(
+                                            probabilityController!.text),
+                                        double.parse(exposureController!.text));
+                                    _valueRiskSlider = calculateRiskSliderValue(
+                                      double.parse(probabilityController!.text),
+                                      double.parse(exposureController!.text),
+                                      double.parse(consequenceController!.text),
+                                    );
+                                  });
+                                },
                               ),
                               const Text(
                                 "Exposure",
@@ -543,41 +629,47 @@ class _HomePageState extends State<HomePage> {
                             ],
                           ),
                         ),
-                        // Tie Line
+                        // Result Tie Line
                         Expanded(
                           flex: 1,
                           child: Column(
                             children: [
-                              SfSlider.vertical(
-                                min: 0.0,
-                                max: 4.0,
-                                interval: 1.0,
-                                value: _valueTieLine,
-                                tooltipPosition: SliderTooltipPosition.right,
-                                showDividers: true,
-                                showTicks: true,
-                                enableTooltip: true,
-                                tooltipTextFormatterCallback:
-                                    (actualValue, formattedText) {
-                                  switch (actualValue) {
-                                    case < 1:
-                                      return 'Risk';
-                                    case < 2:
-                                      return 'Moderate Risk';
-                                    case < 3:
-                                      return 'Subtantial Risk';
-                                    case < 4:
-                                      return 'High Risk';
-                                    case 4:
-                                      return 'Very High Risk';
-                                  }
-                                  return actualValue.toString();
-                                },
-                                onChanged: (dynamic value) {},
+                              SfSliderTheme(
+                                data: const SfSliderThemeData(
+                                    thumbColor: Colors.grey,
+                                    activeTrackColor: Colors.grey),
+                                child: SfSlider.vertical(
+                                  min: 0.0,
+                                  max: 4.0,
+                                  interval: 1.0,
+                                  value: _valueTieLine,
+                                  tooltipPosition: SliderTooltipPosition.right,
+                                  showDividers: true,
+                                  showTicks: true,
+                                  enableTooltip: true,
+                                  tooltipTextFormatterCallback:
+                                      (actualValue, formattedText) {
+                                    switch (actualValue) {
+                                      case < 1:
+                                        return 'Risk';
+                                      case < 2:
+                                        return 'Moderate Risk';
+                                      case < 3:
+                                        return 'Subtantial Risk';
+                                      case < 4:
+                                        return 'High Risk';
+                                      case 4:
+                                        return 'Very High Risk';
+                                    }
+                                    return actualValue.toString();
+                                  },
+                                  onChanged: (dynamic value) {},
+                                ),
                               ),
                               const Text(
                                 "Tie Line",
-                                style: TextStyle(fontSize: 8),
+                                style: TextStyle(
+                                    fontSize: 8, fontWeight: FontWeight.bold),
                               )
                             ],
                           ),
@@ -614,7 +706,19 @@ class _HomePageState extends State<HomePage> {
                                   }
                                   return actualValue.toString();
                                 },
-                                onChanged: (dynamic value) {},
+                                onChanged: (dynamic value) {
+                                  setState(() {
+                                    _sliderValueConsequence = value;
+                                    consequenceController!.text =
+                                        formattingValueConsequence(value)
+                                            .toString();
+                                    _valueRiskSlider = calculateRiskSliderValue(
+                                      double.parse(probabilityController!.text),
+                                      double.parse(exposureController!.text),
+                                      double.parse(consequenceController!.text),
+                                    );
+                                  });
+                                },
                               ),
                               const Text(
                                 "Consequence",
@@ -628,42 +732,70 @@ class _HomePageState extends State<HomePage> {
                           flex: 1,
                           child: Column(
                             children: [
-                              SfSlider.vertical(
-                                min: 0.0,
-                                max: 4.0,
-                                interval: 1.0,
-                                value: _valueRiskSlider,
-                                tooltipPosition: SliderTooltipPosition.right,
-                                showDividers: true,
-                                showTicks: true,
-                                enableTooltip: true,
-                                tooltipTextFormatterCallback:
-                                    (actualValue, formattedText) {
-                                  switch (actualValue) {
-                                    case < 1:
-                                      return 'Risk';
-                                    case < 2:
-                                      return 'Moderate Risk';
-                                    case < 3:
-                                      return 'Subtantial Risk';
-                                    case < 4:
-                                      return 'High Risk';
-                                    case 4:
-                                      return 'Very High Risk';
-                                  }
-                                  return actualValue.toString();
-                                },
-                                onChanged: (dynamic value) {},
+                              SfSliderTheme(
+                                data: const SfSliderThemeData(
+                                    thumbColor: Colors.black,
+                                    activeTrackColor: Colors.black87),
+                                child: SfSlider.vertical(
+                                  min: 0.0,
+                                  max: 4.0,
+                                  interval: 1.0,
+                                  value: _valueRiskSlider,
+                                  tooltipPosition: SliderTooltipPosition.left,
+                                  showDividers: true,
+                                  showTicks: true,
+                                  enableTooltip: true,
+                                  tooltipTextFormatterCallback:
+                                      (actualValue, formattedText) {
+                                    switch (actualValue) {
+                                      case < 1:
+                                        return 'Risk';
+                                      case < 2:
+                                        return 'Moderate Risk';
+                                      case < 3:
+                                        return 'Subtantial Risk';
+                                      case < 4:
+                                        return 'High Risk';
+                                      case 4:
+                                        return 'Very High Risk';
+                                    }
+                                    return actualValue.toString();
+                                  },
+                                  onChanged: (dynamic value) {},
+                                ),
                               ),
                               const Text(
                                 "Risk Score",
-                                style: TextStyle(fontSize: 8),
+                                style: TextStyle(
+                                    fontSize: 8, fontWeight: FontWeight.bold),
                               )
                             ],
                           ),
                         ),
                       ],
                     ),
+                    const SizedBox(height: 16),
+                    const Divider(),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text('Risk Score : '),
+                        Text(
+                          ' $_riskScore',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      ' ${calculateRiskLevel(_riskScore)}',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 11,
+                          color: Colors.black54),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                    )
                   ],
                 ),
               ),

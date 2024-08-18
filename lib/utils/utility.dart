@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+double riskScoreValue = 0;
+
 String formattingValueProbability(dynamic actualValue) {
   double max, min, realValue;
 
@@ -206,54 +208,63 @@ double reverseValueConsequence(double realValue) {
 
 int determineTieLine(double probability, double exposure) {
   if (probability >= 10) {
-    if (exposure <= 0.5) {
+    if (exposure < 1) {
       return 1;
     } else {
       return 0;
     }
   } else if (probability >= 6) {
-    if (exposure <= 0.5) {
+    if (exposure < 2) {
       return 1;
     } else {
       return 0;
     }
   } else if (probability >= 2) {
-    if (exposure <= 0.1) {
-      return 4;
-    } else if (exposure <= 0.5) {
-      return 3;
+    if (exposure < 1) {
+      return 2;
+    } else if (exposure < 3) {
+      return 1;
     } else {
       return 0;
     }
   } else if (probability >= 1) {
-    if (exposure <= 0.5) {
+    if (exposure < 1) {
       return 3;
+    } else if (exposure < 2) {
+      return 2;
+    } else if (exposure < 6) {
+      return 1;
     } else {
       return 0;
     }
   } else if (probability >= 0.5) {
-    if (exposure <= 0.5) {
+    if (exposure < 1) {
       return 4;
-    } else if (exposure <= 2) {
+    } else if (exposure < 2) {
+      return 3;
+    } else if (exposure < 3) {
+      return 2;
+    } else if (exposure < 10) {
+      return 1;
+    } else {
+      return 0;
+    }
+  } else if (probability >= 0.1) {
+    if (exposure < 2) {
+      return 4;
+    } else if (exposure < 3) {
+      return 3;
+    } else if (exposure < 6) {
       return 2;
     } else {
       return 1;
-    }
-  } else if (probability >= 0.1) {
-    if (exposure <= 2) {
-      return 4;
-    } else {
-      return 3;
     }
   }
 
   return 0;
 }
 
-String calculateRiskLevel(
-    double probability, double exposure, double consequence) {
-  double riskScore = probability * exposure * consequence;
-
+String calculateRiskLevel(double riskScore) {
   if (riskScore > 400) {
     return 'Very High Risk - Sangat berbahaya, tindakan harus segera diambil';
   } else if (riskScore >= 200 && riskScore <= 400) {
@@ -263,14 +274,15 @@ String calculateRiskLevel(
   } else if (riskScore >= 20 && riskScore < 70) {
     return 'Moderate Risk - Risiko sedang, pemantauan diperlukan';
   } else {
-    return 'Risk - Risiko dapat diterima';
+    return 'Low Risk - Risiko Rendah, dapat diterima';
   }
 }
 
 int calculateRiskSliderValue(
     double probability, double exposure, double consequence) {
   double riskScore = probability * exposure * consequence;
-  log('Risk Score : $riskScore');
+  riskScoreValue = riskScore;
+  // log('Risk Score : $riskScore');
 
   if (riskScore > 400) {
     return 4;
