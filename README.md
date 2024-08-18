@@ -50,3 +50,15 @@ Risk = Peluang x Exposure x Consequence
 | >20 | Risk | Risiko dapat diterima |
 
 ### **Matriks Tie Line (2 Parameter: Probability & Exposure)**
+
+| Probability \ Exposure | Very Rare (0,5) | Rare (1) | Infrequent (2) | Occasional (3) | Frequent (6) | Continuous (10) |
+| --- | --- | --- | --- | --- | --- | --- |
+| Almost Certain (10) | Moderate Risk | Low Risk | Low Risk | Low Risk | Low Risk | Low Risk |
+| Quite Possible (6) | Moderate Risk | Moderate Risk | Low Risk | Low Risk | Low Risk | Low Risk |
+| Unusual but Possible (2) | Substantial Risk | Moderate Risk | Moderate Risk | Low Risk | Low Risk | Low Risk |
+| Remotely Possible (1) | High Risk | Substantial Risk | Moderate Risk | Moderate Risk | Low Risk | Low Risk |
+| Conceivable (but unlikely) (0,5) | Very High Risk | High Risk | Substantial Risk | Moderate Risk | Moderate Risk | Low Risk |
+| Practically Impossible (0,1) | Very High Risk | Very High Risk | High Risk | Substantial Risk | Moderate Risk | Moderate Risk |
+
+###Demo
+![Risk Score](https://raw.githubusercontent.com/lutfialdrii/lutfialdrii/main/assets/RiskScore.jpeg)
